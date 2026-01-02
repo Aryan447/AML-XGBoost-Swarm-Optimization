@@ -1,8 +1,35 @@
-__pycache__
+# Python bytecode
+__pycache__/
 *.pyc
-.git
-.gitignore
-.env
+*.pyo
+*.pyd
+
+# Virtual Environments
 venv/
-tests/
-scripts/
+.venv/
+env/
+
+# Environment Variables & Secrets
+.env
+.env.local
+
+# IDE Settings (VS Code / PyCharm)
+.vscode/
+.idea/
+
+# Heavy ML Artifacts (Don't commit these to Git!)
+# models/*.json
+# models/*.pkl
+# models/*.bin
+# models/*.joblib
+
+# Datasets
+data/
+
+# Testing caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
