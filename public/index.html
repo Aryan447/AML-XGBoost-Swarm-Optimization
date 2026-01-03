@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AML Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-card { max-width: 900px; margin: 50px auto; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 12px; }
+        .card-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-radius: 12px 12px 0 0 !important; padding: 20px; }
+        .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; }
+        .form-control, .form-select { border-radius: 8px; padding: 10px; border: 1px solid #ced4da; }
+        .form-control:focus { border-color: #2a5298; box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25); }
+        .btn-analyze { background-color: #2a5298; color: white; padding: 12px; font-weight: bold; border-radius: 8px; transition: all 0.3s; }
+        .btn-analyze:hover { background-color: #1e3c72; transform: translateY(-1px); }
+        .result-box { display: none; margin-top: 25px; padding: 20px; border-radius: 10px; animation: fadeIn 0.5s; }
+        .safe { background-color: #d1e7dd; border: 1px solid #badbcc; color: #0f5132; }
+        .danger { background-color: #f8d7da; border: 1px solid #f5c2c7; color: #842029; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="card main-card">
+    <div class="card-header text-center">
+        <h3 class="mb-0">🛡️ AML Transaction Inspector</h3>
+        <p class="mb-0 opacity-75">AI-Powered Money Laundering Detection</p>
+    </div>
+    <div class="card-body p-4">
+        <form id="amlForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Timestamp (YYYY/MM/DD HH:MM)</label>
+                    <input type="text" class="form-control" name="Timestamp" value="2022/09/01 14:30" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Payment Format</label>
+                    <select class="form-select" name="Payment Format">
+                        <option value="Wire">Wire Transfer</option>
+                        <option value="Bitcoin">Bitcoin / Crypto</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="ACH">ACH</option>
+                        <option value="Reinvestment">Reinvestment</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Amount Paid</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" step="0.01" class="form-control" name="Amount Paid" value="15000.00" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Amount Received</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" step="0.01" class="form-control" name="Amount Received" value="15000.00" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Source Bank ID</label>
+                    <input type="number" class="form-control" name="From Bank" value="105">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Dest Bank ID</label>
+                    <input type="number" class="form-control" name="To Bank" value="902">
+                </div>
+
+                <input type="hidden" name="Account" value="X">
+                <input type="hidden" name="Account.1" value="Y">
+                <input type="hidden" name="Receiving Currency" value="USD">
+                <input type="hidden" name="Payment Currency" value="USD">
+
+            </div>
+
+            <button type="submit" class="btn btn-analyze w-100 mt-4">Analyze Transaction Risk</button>
+        </form>
+
+        <div id="result" class="result-box text-center">
+            </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('amlForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'none';
+
+    // 1. Gather Data
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    // 2. Type Conversion (API expects numbers)
+    ['Amount Paid', 'Amount Received', 'From Bank', 'To Bank'].forEach(key => {
+        data[key] = parseFloat(data[key]);
+    });
+
+    try {
+        // 3. Send Request
+        const response = await fetch('/api/v1/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const res = await response.json();
+
+        // 4. Show Result
+        resultDiv.style.display = 'block';
+        if (response.ok) {
+            const isFraud = res.is_laundering === 1;
+            resultDiv.className = `result-box ${isFraud ? 'danger' : 'safe'}`;
+            resultDiv.innerHTML = `
+                <h4 class="mb-2">${isFraud ? '🚨 SUSPICIOUS ACTIVITY DETECTED' : '✅ TRANSACTION CLEARED'}</h4>
+                <div class="d-flex justify-content-center gap-4 mt-3">
+                    <div><strong>Risk Score:</strong> ${(res.risk_score * 100).toFixed(2)}%</div>
+                    <div><strong>Level:</strong> ${res.risk_level}</div>
+                </div>
+            `;
+        } else {
+            resultDiv.className = 'result-box alert alert-warning';
+            resultDiv.innerHTML = `<strong>Error:</strong> ${res.detail || 'Unknown error occurred'}`;
+        }
+    } catch (error) {
+        resultDiv.className = 'result-box alert alert-danger';
+        resultDiv.innerHTML = `<strong>Connection Failed:</strong> Is the API running?`;
+        console.error(error);
+    }
+});
+</script>
+
+</body>
+</html>
