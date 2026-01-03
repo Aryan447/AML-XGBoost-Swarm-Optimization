@@ -10,20 +10,25 @@ htmlcov/
 *.log
 .env.local
 .env.*.local
-.git/
+# Exclude development files
+.git
 .gitignore
-README.md
-CODE_OF_CONDUCT.md
-SECURITY.md
-LICENSE
-docker-compose.yml
-Dockerfile
-tests/
-scripts/
-.github/
+.github
+.vscode
+venv
+tests
+scripts
+huggingface
 
-# Model files - should be hosted externally for Vercel
-# Exclude models to reduce deployment size (use MODEL_URL env var instead)
-models/
+# Exclude original heavy model files
 models/*.json
 models/*.pkl
+models/temp_patched_model.json
+
+# Keep ONNX model files
+!models/model.onnx
+!models/scaler_params.json
+
+# Exclude docs
+*.md
+LICENSE

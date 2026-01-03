@@ -62,7 +62,7 @@ jobs:
       - name: Check for model files
         id: check_models
         run: |
-          if [ -f models/best_model_gwo.json ] && [ -f models/scaler.pkl ] && [ -f models/feature_columns.pkl ]; then
+          if [ -f models/model.onnx ] && [ -f models/scaler_params.json ]; then
             echo "models_exist=true" >> $GITHUB_OUTPUT
             echo "✅ Model files found"
           else

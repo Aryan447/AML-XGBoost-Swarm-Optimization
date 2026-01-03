@@ -1,9 +1,9 @@
 """API endpoints for transaction prediction."""
 from fastapi import APIRouter, HTTPException, Depends
-import pandas as pd
 import logging
 from typing import Optional
 from app.schemas.transaction import TransactionRequest, PredictionResponse
+
 from app.services.model_service import ModelService
 from app.core.config import settings
 
@@ -64,12 +64,11 @@ def predict_transaction(
         HTTPException: 400 for invalid input, 503 for service unavailable, 500 for server errors
     """
     try:
-        # Convert Pydantic model to DataFrame (by_alias handles "From Bank" vs "from_bank")
+        # Convert Pydantic model to dict (by_alias handles "From Bank" vs "from_bank")
         data = txn.model_dump(by_alias=True)
-        df = pd.DataFrame([data])
-
+        
         # Get prediction from service
-        score = service.predict(df)
+        score = service.predict(data)
 
         return PredictionResponse(
             is_laundering=int(score > 0.5),

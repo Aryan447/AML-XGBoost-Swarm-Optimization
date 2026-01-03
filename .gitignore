@@ -17,11 +17,15 @@ env/
 .vscode/
 .idea/
 
-# Heavy ML Artifacts (Don't commit these to Git!)
-# models/*.json
-# models/*.pkl
-# models/*.bin
-# models/*.joblib
+# Heavy ML Artifacts
+models/*.json
+models/*.pkl
+models/*.bin
+models/*.joblib
+
+# Exceptions (Lightweight Deployment)
+!models/model.onnx
+!models/scaler_params.json
 
 # Datasets
 data/
