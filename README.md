@@ -13,6 +13,7 @@ Anti-Money Laundering (AML) detection system using XGBoost with Swarm-Based Meta
 - 🚀 FastAPI-based REST API
 - 🤖 XGBoost model optimized with Grey Wolf Optimization (GWO)
 - 🐳 Docker support for easy deployment
+- ☁️ Vercel serverless deployment (free tier)
 - 📊 Real-time transaction risk scoring
 - 🔒 Production-ready error handling and logging
 
@@ -20,16 +21,21 @@ Anti-Money Laundering (AML) detection system using XGBoost with Swarm-Based Meta
 
 ```
 AML-XGBoost-Swarm-Optimization/
+├── api/                 # Vercel serverless functions
+│   └── index.py         # API handler
 ├── app/
 │   ├── api/v1/          # API endpoints
 │   ├── core/            # Configuration
 │   ├── schemas/         # Pydantic models
 │   ├── services/        # Business logic (ModelService)
-│   ├── static/          # Frontend assets
+│   ├── static/          # Frontend assets (legacy)
 │   └── main.py          # FastAPI application
+├── public/              # Static files for Vercel
+│   └── index.html       # Frontend UI
 ├── models/              # Trained model artifacts
 ├── scripts/             # Training scripts
 ├── tests/               # Test suite
+├── vercel.json          # Vercel configuration
 └── requirements.txt     # Python dependencies
 ```
 
@@ -87,6 +93,70 @@ AML-XGBoost-Swarm-Optimization/
    docker build -t aml-api .
    docker run -p 8000:8000 -v ./models:/app/models aml-api
    ```
+
+### Vercel Deployment (Free Hosting) 🆓
+
+Deploy your AML detection system for free on Vercel's serverless platform.
+
+#### Prerequisites
+
+- Vercel account (sign up at [vercel.com](https://vercel.com))
+- Vercel CLI (optional, for CLI deployment)
+- Model files in the `models/` directory
+
+#### Deployment Steps
+
+1. **Install Vercel CLI (optional)**
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Ensure model files are present**
+   Make sure your `models/` directory contains:
+   - `best_model_gwo.json`
+   - `scaler.pkl`
+   - `feature_columns.pkl`
+
+3. **Deploy via Vercel Dashboard**
+   - Push your code to GitHub/GitLab/Bitbucket
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your repository
+   - Vercel will auto-detect the Python project
+   - Click "Deploy"
+
+4. **Or deploy via CLI**
+   ```bash
+   vercel login
+   vercel
+   ```
+
+5. **Set Environment Variables (if needed)**
+   - In Vercel dashboard, go to Project Settings → Environment Variables
+   - Add `MODEL_DIR` if you need a custom path (default: `./models`)
+
+#### Important Notes for Vercel
+
+- **Model Files**: Ensure model files are committed to your repository (they'll be included in deployment)
+- **File Size Limit**: Vercel free tier has a 50MB limit per file. If your models exceed this, consider:
+  - Using Vercel Blob Storage
+  - Compressing model files
+  - Using a model hosting service
+- **Cold Starts**: First request may be slower due to serverless cold starts
+- **Timeout**: Free tier has 10-second function timeout (Pro: 60 seconds)
+
+#### Project Structure for Vercel
+
+- `api/index.py` - Serverless function handler
+- `public/` - Static files (served automatically)
+- `vercel.json` - Vercel configuration
+- `models/` - Model artifacts (included in deployment)
+
+#### Access Your Deployed App
+
+After deployment, you'll get a URL like:
+- `https://your-project.vercel.app` - Frontend
+- `https://your-project.vercel.app/api/v1/predict` - API endpoint
+- `https://your-project.vercel.app/health` - Health check
 
 ## API Usage
 

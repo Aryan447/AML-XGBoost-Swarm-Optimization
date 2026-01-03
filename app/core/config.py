@@ -1,4 +1,5 @@
 """Application configuration settings."""
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +15,7 @@ class Settings(BaseSettings):
     
     PROJECT_NAME: str = "AML Detection System"
     API_V1_STR: str = "/api/v1"
-    MODEL_DIR: str = "/app/models"
+    MODEL_DIR: str = os.getenv("MODEL_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models"))
 
     model_config = SettingsConfigDict(
         case_sensitive=True,

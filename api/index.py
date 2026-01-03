@@ -10,26 +10,13 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# Set environment variable for model directory
-os.environ.setdefault("MODEL_DIR", str(project_root / "models"))
+# Set environment variable for model directory (Vercel uses /var/task for serverless functions)
+model_dir = os.getenv("MODEL_DIR", str(project_root / "models"))
+os.environ["MODEL_DIR"] = model_dir
 
+from mangum import Mangum
 from app.main import app
 
-# Vercel expects a handler function
-def handler(request):
-    """
-    Vercel serverless function handler.
-    
-    Args:
-        request: Vercel request object
-        
-    Returns:
-        Response from FastAPI application
-    """
-    return app(request.environ, request.start_response)
-
-# For Vercel Python runtime
-if __name__ == "__main__":
-    from mangum import Mangum
-    handler = Mangum(app)
+# Create Mangum adapter for Vercel
+handler = Mangum(app, lifespan="off")
 

@@ -46,8 +46,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Mount Frontend
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+# Mount Frontend (only if directory exists, for Vercel we serve from public/)
+import os
+if os.path.exists("app/static"):
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Include API Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
