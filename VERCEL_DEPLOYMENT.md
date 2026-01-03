@@ -61,14 +61,28 @@ Your project is already configured for Vercel:
 
 ## Important Considerations
 
-### Model File Size
+### Model File Size & Deployment Limit
 
-Vercel free tier has a **50MB limit per file**. If your model files exceed this:
+⚠️ **Important**: Vercel has a **300MB total deployment limit**. With ML libraries (XGBoost, pandas, numpy), deployments often exceed this.
 
-1. **Compress models** (if possible)
-2. **Use Vercel Blob Storage** (Pro feature)
-3. **Host models externally** and load via URL
-4. **Split large files** into smaller chunks
+**Solution**: Host models externally and load via URL:
+
+1. **GitHub Releases** (Recommended - Free)
+   - Upload models to a GitHub release
+   - Set `MODEL_URL` environment variable
+   - See [VERCEL_MODEL_SETUP.md](VERCEL_MODEL_SETUP.md) for details
+
+2. **Cloud Storage** (S3, GCS, etc.)
+   - Upload models to cloud storage
+   - Set `MODEL_URL` to bucket URL
+
+3. **Vercel Blob Storage** (Pro feature)
+
+**Quick Fix**:
+```bash
+# Set in Vercel Dashboard → Environment Variables
+MODEL_URL=https://github.com/USERNAME/REPO/releases/download/v1.0.0
+```
 
 ### Environment Variables
 

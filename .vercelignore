@@ -22,3 +22,9 @@ tests/
 scripts/
 .github/
 
+# Model files - should be hosted externally for Vercel
+# Exclude models to reduce deployment size (use MODEL_URL env var instead)
+models/
+models/*.json
+models/*.pkl
+

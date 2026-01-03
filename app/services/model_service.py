@@ -1,7 +1,9 @@
 """Model service for loading and using the trained XGBoost model."""
 import os
 import logging
+import tempfile
 from typing import Optional
+from urllib.request import urlretrieve
 import joblib
 import xgboost as xgb
 import pandas as pd
@@ -30,21 +32,45 @@ class ModelService:
 
     def _load_artifacts(self, model_dir: str) -> None:
         """
-        Load model artifacts from the specified directory.
+        Load model artifacts from the specified directory or URL.
+        
+        Supports:
+        - Local file paths
+        - URLs (downloads to temp directory)
+        - Environment variables for model URLs
         
         Args:
-            model_dir: Directory containing model artifacts
+            model_dir: Directory path or base URL containing model artifacts
             
         Raises:
             FileNotFoundError: If any required file is missing
             ValueError: If files are corrupted or invalid
         """
         try:
-            logger.info(f"Loading models from {model_dir}...")
-            model_path = os.path.join(model_dir, "best_model_gwo.json")
-            scaler_path = os.path.join(model_dir, "scaler.pkl")
-            features_path = os.path.join(model_dir, "feature_columns.pkl")
+            # Check if model_dir is a URL or local path
+            is_url = model_dir.startswith(('http://', 'https://'))
+            
+            if is_url:
+                logger.info(f"Loading models from URL: {model_dir}...")
+                # Download models to temp directory
+                temp_dir = tempfile.mkdtemp()
+                model_path = os.path.join(temp_dir, "best_model_gwo.json")
+                scaler_path = os.path.join(temp_dir, "scaler.pkl")
+                features_path = os.path.join(temp_dir, "feature_columns.pkl")
+                
+                # Download files
+                logger.info("Downloading model files...")
+                urlretrieve(f"{model_dir}/best_model_gwo.json", model_path)
+                urlretrieve(f"{model_dir}/scaler.pkl", scaler_path)
+                urlretrieve(f"{model_dir}/feature_columns.pkl", features_path)
+                logger.info("Model files downloaded successfully")
+            else:
+                logger.info(f"Loading models from local path: {model_dir}...")
+                model_path = os.path.join(model_dir, "best_model_gwo.json")
+                scaler_path = os.path.join(model_dir, "scaler.pkl")
+                features_path = os.path.join(model_dir, "feature_columns.pkl")
 
+            # Verify files exist
             if not os.path.exists(model_path):
                 raise FileNotFoundError(f"Model not found at {model_path}")
             if not os.path.exists(scaler_path):
@@ -52,6 +78,7 @@ class ModelService:
             if not os.path.exists(features_path):
                 raise FileNotFoundError(f"Features not found at {features_path}")
 
+            # Load artifacts
             self.model = xgb.Booster()
             self.model.load_model(model_path)
             self.scaler = joblib.load(scaler_path)

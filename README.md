@@ -136,12 +136,13 @@ Deploy your AML detection system for free on Vercel's serverless platform.
 
 #### Important Notes for Vercel
 
-- **Model Files**: Ensure model files are committed to your repository (they'll be included in deployment)
-- **File Size Limit**: Vercel free tier has a 50MB limit per file. If your models exceed this, consider:
-  - Using Vercel Blob Storage
-  - Compressing model files
-  - Using a model hosting service
-- **Cold Starts**: First request may be slower due to serverless cold starts
+- **Deployment Size Limit**: ⚠️ Vercel has a **300MB total deployment limit**. With ML libraries, this can be exceeded.
+  - **Solution**: Host models externally (GitHub Releases, S3, etc.) and set `MODEL_URL` environment variable
+  - See [VERCEL_MODEL_SETUP.md](VERCEL_MODEL_SETUP.md) for detailed instructions
+- **Model Loading**: Models can be loaded from:
+  - Local path: `MODEL_DIR=./models` (for local dev)
+  - URL: `MODEL_URL=https://...` (for Vercel)
+- **Cold Starts**: First request may be slower (2-5 seconds) due to serverless cold starts
 - **Timeout**: Free tier has 10-second function timeout (Pro: 60 seconds)
 
 #### Project Structure for Vercel
