@@ -1,183 +1,89 @@
-![Python](https://img.shields.io/badge/python-3.9-blue.svg)
-![XGBoost](https://img.shields.io/badge/XGBoost-optimized-brightgreen.svg)
+# 🦅 AML Detection System
+
+![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![ONNX](https://img.shields.io/badge/ONNX_Runtime-Accelerated-blueviolet.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-teal.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Status](https://img.shields.io/badge/build-passing-success.svg)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-# AML Detection System
+**Anti-Money Laundering (AML) Detection** powered by **XGBoost** and **Swarm Intelligence**, optimized for ultra-low latency inference using **ONNX Runtime**. This system detects suspicious financial transactions with high accuracy and minimal resource footprint.
 
-Anti-Money Laundering (AML) detection system using XGBoost with Swarm-Based Metaheuristic Optimization. This repository contains a production-ready FastAPI service for detecting suspicious financial transactions.
+## ⚡ Key Features
 
-## Features
+- **🚀 High Performance**: Sub-millisecond inference using ONNX Runtime.
+- **☁️ production Ready**: Designed for serverless (Vercel) and containerized environments.
+- **🛡️ Secure & Scalable**: FastAPI backend with Pydantic validation and robust error handling.
+- **🧠 Advanced AI**: XGBoost classifier tuned via Grey Wolf Optimization (GWO).
 
-- 🚀 FastAPI-based REST API
-- 🤖 XGBoost model optimized with Grey Wolf Optimization (GWO)
-- 🐳 Docker support for easy deployment
-- ☁️ Vercel serverless deployment (free tier)
-- 📊 Real-time transaction risk scoring
-- 🔒 Production-ready error handling and logging
+---
 
-## Project Structure
+## 🏗️ Architecture
 
-```
-AML-XGBoost-Swarm-Optimization/
-├── api/                 # Vercel serverless functions
-│   └── index.py         # API handler
-├── app/
-│   ├── api/v1/          # API endpoints
-│   ├── core/            # Configuration
-│   ├── schemas/         # Pydantic models
-│   ├── services/        # Business logic (ModelService)
-│   ├── static/          # Frontend assets (legacy)
-│   └── main.py          # FastAPI application
-├── public/              # Static files for Vercel
-│   └── index.html       # Frontend UI
-├── models/              # Trained model artifacts
-├── scripts/             # Training scripts
-├── tests/               # Test suite
-├── vercel.json          # Vercel configuration
-└── requirements.txt     # Python dependencies
-```
+The system uses a split-optimization strategy to deliver heavy ML capabilities in a lightweight package:
 
-## Quick Start
+- **Training**: Models trained with XGBoost and optimized using Swarm Intelligence (GWO).
+- **Inference**: Models converted to **ONNX** format for portable, dependency-free execution (`< 100MB` deployment).
+- **API**: FastAPI provides a clean REST interface for real-time predictions.
+
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Python 3.9+
-- Docker and Docker Compose (optional)
+- Docker (optional)
 
-### Local Development
+### 🛠️ Local Installation
 
-1. **Clone the repository**
+1. **Clone & Setup**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Aryan447/AML-XGBoost-Swarm-Optimization.git
    cd AML-XGBoost-Swarm-Optimization
-   ```
-
-2. **Create virtual environment**
-   ```bash
+   
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
+   source venv/bin/activate  # Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-4. **Ensure model files exist**
-   Make sure the `models/` directory contains:
-   - `best_model_gwo.json`
-   - `scaler.pkl`
-   - `feature_columns.pkl`
-
-5. **Run the API**
+2. **Run the API**
    ```bash
-   uvicorn app.main:app --reload --port 8000
+   uvicorn app.main:app --reload
    ```
+   Access documentation at: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-6. **Access the API**
-   - API Documentation: http://localhost:8000/docs
-   - Frontend: http://localhost:8000/
-   - Health Check: http://localhost:8000/health
+### 🐳 Docker Deployment
 
-### Docker Deployment
+Run the complete stack with a single command:
 
-1. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
+```bash
+docker-compose up --build
+```
 
-2. **Or build and run manually**
-   ```bash
-   docker build -t aml-api .
-   docker run -p 8000:8000 -v ./models:/app/models aml-api
-   ```
+Or build manually:
+```bash
+docker build -t aml-api .
+docker run -p 8000:8000 aml-api
+```
 
-### Vercel Deployment (Free Hosting) 🆓
+---
 
-Deploy your AML detection system for free on Vercel's serverless platform.
+## 🌐 API Reference
 
-#### Prerequisites
+### 🔍 Predict Risk
+`POST /api/v1/predict`
 
-- Vercel account (sign up at [vercel.com](https://vercel.com))
-- Vercel CLI (optional, for CLI deployment)
-- Model files in the `models/` directory
-
-#### Deployment Steps
-
-1. **Install Vercel CLI (optional)**
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Ensure model files are present**
-   Make sure your `models/` directory contains:
-   - `best_model_gwo.json`
-   - `scaler.pkl`
-   - `feature_columns.pkl`
-
-3. **Deploy via Vercel Dashboard**
-   - Push your code to GitHub/GitLab/Bitbucket
-   - Go to [vercel.com/new](https://vercel.com/new)
-   - Import your repository
-   - Vercel will auto-detect the Python project
-   - Click "Deploy"
-
-4. **Or deploy via CLI**
-   ```bash
-   vercel login
-   vercel
-   ```
-
-5. **Set Environment Variables (if needed)**
-   - In Vercel dashboard, go to Project Settings → Environment Variables
-   - Add `MODEL_DIR` if you need a custom path (default: `./models`)
-
-#### Important Notes for Vercel
-
-- **Deployment Size Limit**: ⚠️ Vercel has a **300MB total deployment limit**. With ML libraries, this can be exceeded.
-  - **Solution**: Host models externally (GitHub Releases, S3, etc.) and set `MODEL_URL` environment variable
-  - See [VERCEL_MODEL_SETUP.md](VERCEL_MODEL_SETUP.md) for detailed instructions
-- **Model Loading**: Models can be loaded from:
-  - Local path: `MODEL_DIR=./models` (for local dev)
-  - URL: `MODEL_URL=https://...` (for Vercel)
-- **Cold Starts**: First request may be slower (2-5 seconds) due to serverless cold starts
-- **Timeout**: Free tier has 10-second function timeout (Pro: 60 seconds)
-
-#### Project Structure for Vercel
-
-- `api/index.py` - Serverless function handler
-- `public/` - Static files (served automatically)
-- `vercel.json` - Vercel configuration
-- `models/` - Model artifacts (included in deployment)
-
-#### Access Your Deployed App
-
-After deployment, you'll get a URL like:
-- `https://your-project.vercel.app` - Frontend
-- `https://your-project.vercel.app/api/v1/predict` - API endpoint
-- `https://your-project.vercel.app/health` - Health check
-
-## API Usage
-
-### Predict Transaction Risk
-
-**Endpoint:** `POST /api/v1/predict`
-
-**Request Body:**
+**Payload:**
 ```json
 {
-  "Timestamp": "2022/09/01 08:30",
-  "From Bank": 123,
-  "Account": "ACC001",
-  "To Bank": 456,
-  "Account.1": "ACC002",
-  "Amount Received": 10000.0,
+  "Timestamp": "2024-01-01 10:00:00",
+  "From Bank": 10,
+  "Account": "ACCX99",
+  "To Bank": 12,
+  "Account.1": "ACCY88",
+  "Amount Received": 50000.0,
   "Receiving Currency": "USD",
-  "Amount Paid": 10000.0,
+  "Amount Paid": 50000.0,
   "Payment Currency": "USD",
-  "Payment Format": "Wire"
+  "Payment Format": "Wire",
+  "Is Laundering": 0
 }
 ```
 
@@ -185,58 +91,30 @@ After deployment, you'll get a URL like:
 ```json
 {
   "is_laundering": 0,
-  "risk_score": 0.2345,
+  "risk_score": 0.045,
   "risk_level": "LOW"
 }
 ```
 
-**Risk Levels:**
-- `LOW`: risk_score ≤ 0.5
-- `HIGH`: 0.5 < risk_score ≤ 0.8
-- `CRITICAL`: risk_score > 0.8
+### 💓 Health Check
+`GET /health`
+Returns system status and model readiness.
 
-### Health Check
+---
 
-**Endpoint:** `GET /health`
+## 📂 Project Structure
 
-**Response:**
-```json
-{
-  "status": "ok"
-}
+```
+.
+├── app/
+│   ├── api/          # Endpoints
+│   ├── services/     # Inference Logic (ONNX)
+│   └── main.py       # App Entrypoint
+├── models/           # Optimization Artifacts (.onnx)
+├── public/           # Static Assets
+└── tests/            # Pytest Suite
 ```
 
-## Environment Variables
+## 📜 License
 
-- `MODEL_DIR`: Path to model directory (default: `/app/models`)
-
-## Testing
-
-Run tests with pytest:
-```bash
-pytest tests/
-```
-
-## Development
-
-### Code Structure
-
-- **API Layer** (`app/api/v1/endpoints.py`): Handles HTTP requests/responses
-- **Service Layer** (`app/services/model_service.py`): Business logic and model inference
-- **Schemas** (`app/schemas/transaction.py`): Request/response models
-- **Configuration** (`app/core/config.py`): Application settings
-
-### Key Features
-
-- Singleton pattern for model service (model loaded once on startup)
-- Comprehensive error handling with appropriate HTTP status codes
-- Structured logging throughout the application
-- Type hints for better code maintainability
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md) for details on our code of conduct and security policy.
+Distributed under the MIT License. See `LICENSE` for more information.

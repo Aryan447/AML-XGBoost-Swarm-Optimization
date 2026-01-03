@@ -4,9 +4,6 @@ services:
     container_name: aml-production
     ports:
       - "8000:8000"
-    volumes:
-      # Mount models from host to container
-      - ./models:/app/models
     environment:
       - MODEL_DIR=/app/models
     restart: always
